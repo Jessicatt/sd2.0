@@ -12,7 +12,7 @@
 
             this.routes = routes;
             //检测hash值
-            window.onhashchange = this.getRouterParams;
+            window.onhashchange = this.getRouterParams.bind(this);
         },
         //资源路径
         pathArr: [],
@@ -25,9 +25,18 @@
 
             //读取路径
             sd.each(this.routes,function(index,item){
-                this.readPath(item);
+                if(item.path === path){
+                    this.readPath(item);
+                    return false;
+                }
             },this)
 
+            //不存在对应路由,返回
+            if(this.pathArr.length<1){
+                return;
+            }
+
+            console.log('readConfig')
             for (var j = 0; j < this.pathArr.length; j++) {
                 var pathObj = this.pathArr[j];
                 var id = this.pathToId(this.parPath, pathObj.url);
@@ -36,13 +45,19 @@
                 if (!this.propInArr('id', id, sd.assetsManage)) {
                     var obj = {
                         id: id,
-                        data: '',
+                        data: 'loading...',
                         type:this.getExtName(pathObj.url),
                         status: ''
                     }
                     sd.assetsManage.push(obj);
                 }else{
+                    
                     //如果已经存在了
+
+                    //id存在但是正在加载  不作任何处理
+                    if(this.propInArr('data','loading...', sd.assetsManage)){
+                        continue;
+                    }
                     //先从资源数组中移除
                     sd.each(this.pathArr,function(index,item){
                         if(item.id == id){
@@ -67,8 +82,7 @@
         pathToId: function (path, str) {
             //路径名转为id
             path = (path == '/' ? 'main' : path).replace(/(\\|\/)/g, '_');
-            str = str.replace(/(\\|\/)/g, '_');//将斜线转成下划线
-            str = str.replace(/\.(\w)+$/g,'');//去除后缀
+            str = str.replace(/(\\|\/|\.)/g, '_');//将斜线和.转成下划线
             return path + '_' + str;
         },
         readPath: function (obj) {
@@ -86,19 +100,17 @@
             }
         },
         start: function () {
-            //判断主页是静态页面还是配在路由中
-            var arr = this.routes.filter(function (item) {
-                return item.path === '/';
-            })
-            if (arr && arr.length > 0) {
-                this.parPath = '/';
-                this.readConfig("/");
+            
+            var hashObj = this.getRouterParams();
+            if(hashObj == '/'){
+                this.parPath = hashObj;
+                this.readConfig(this.parPath);
             }
-            else{
-                var page = this.getRouterParams();
-                
+            else if(hashObj.page){
+                this.parPath = '/'+hashObj.page;
+                this.readConfig(this.parPath);
             }
-            // return (arr&&arr.length>0)?true:false;
+            
         },
         propInArr: function (key, value, arr) {
             //对象的key和value是否存在对应的arr中
@@ -130,33 +142,34 @@
         routes: [],
         //页面的hash处理
         pages: {},
-        getRouterParams: function () {
+        getRouterParams: 
             //取出页面hash值
+            function(){
+                var hash = window.location.hash;
             
-            var hash = window.location.hash;
-            
-            var obj = '';
-            if (hash.indexOf('#') > -1) {
-                hash = hash.substring(1, hash.length);
-                var params = hash.split('&');
-                obj = {
-                    'page': params[0]
-                };
-                this.parPath = params[0];
-                for (var i = 1; i < params.length; i++) {
-                    var item = params[i].split('=');
-                    obj[item[0]] = item[1];
+                var obj = '';
+                if (hash.indexOf('#') > -1) {
+                    hash = hash.substring(1, hash.length);
+                    var params = hash.split('&');
+                    obj = {
+                        'page': params[0]
+                    };
+                    this.parPath = '/'+params[0];
+                    for (var i = 1; i < params.length; i++) {
+                        var item = params[i].split('=');
+                        obj[item[0]] = item[1];
+                    }
+                    pages = obj;
+                    this.readConfig(this.parPath);
+                    console.log(pages);
                 }
-                pages = obj;
-                // this.readConfig(params[0]);
-                console.log(pages);
+                else{
+                    //没有路由
+                    obj = '/';
+                }
+                return obj;
             }
-            else{
-                //没有路由
-                obj = '/';
-            }
-            return obj;
-        },
+         ,
         //事件管理列表
         eventList: {},
         /**
@@ -297,6 +310,15 @@
     var classToType = {};
 
     sd.extend({
+        components:function(obj){
+            //调用初始函数
+            if(sd.type(obj)!='object'){
+                throw new Error('components参数格式不对!');
+            }
+            if(obj.start&&sd.type(obj.start)=='function'){
+                obj.start();
+            }
+        },
         //资源管理器 id 为资源id data 为数据 status 存储状态
         assetsManage: [],
         //根据id读取对应的资源
@@ -372,7 +394,7 @@
     sd.each("Boolean Number String Function Array Date RegExp Object".split(" "), function (i, name) {
         classToType["[object " + name + "]"] = name.toLowerCase();
     });
-
+    
     sd.fn.init.prototype = sd.fn;
 
     if (win) {

@@ -14,8 +14,12 @@
         var routes = [{
             el:"#a .path",
             path:'/',
-            assets:['src/res/test.txt','src/res/test.txt',"src/res/admin_add.html","src/res/admin_edit.html"],
-            children:[{el:"#a .p",path:"b",assets:["src/res/test.txt"]}]
+            assets:['src/res/test.txt',"src/res/admin_edit.html"],
+            children:[{el:"#a .p",path:"b",assets:["src/res/admin_add.html"]}]
+        },{
+            el:'#a .path',
+            path:"/test",
+            assets:['src/res/test.html'],
         }];
 
         sd(routes).start();

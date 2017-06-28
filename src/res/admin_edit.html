@@ -47,37 +47,39 @@
         font-size: 12px;
     }
 </style>
-<div class="adminAdd">
-    <div class="item">
-        <div class="lable">用户名: </div>
-        <div class="conent">
-            <input v-model="user.name" type="text" class="input" style="width: 325px;" placeholder="输入真实姓名">
-            <span>长度2至4</span>
+<template>
+    <div class="adminAdd">
+        <div class="item">
+            <div class="lable">用户名: </div>
+            <div class="conent">
+                <input v-model="user.name" type="text" class="input" style="width: 325px;" placeholder="输入真实姓名">
+                <span>长度2至4</span>
+            </div>
+        </div>
+        <div class="item">
+            <div class="lable">手机号码: </div>
+            <div class="conent">
+                <input v-model="user.mobile" type="text" class="input" style="width: 325px; " disabled="disabled" placeholder="输入成员手机号码">
+            </div>
+        </div>
+        <!--<div class="item">
+            <div class="lable">密码: </div>
+            <div class="conent">
+                <input v-model="user.password" type="password" class="input" style="width: 325px; " placeholder="输入密码">
+                <span>长度8至12</span>
+            </div>
+        </div>-->
+        <div class="item">
+            <div class="lable">设置状态: </div>
+            <div class="conent">
+                <sd-radio :list.sync="status" :index.sync="status_selected" :name='"name"'></sd-radio>
+            </div>
+        </div>
+        <div class="item">
+            <div class="lable">选择账号类型: </div>
+            <div class="conent">
+                <sd-radio :list.sync="roles" :index.sync="roles_selected" :name='"remark"'></sd-radio>
+            </div>
         </div>
     </div>
-    <div class="item">
-        <div class="lable">手机号码: </div>
-        <div class="conent">
-            <input v-model="user.mobile" type="text" class="input" style="width: 325px; " disabled="disabled" placeholder="输入成员手机号码">
-        </div>
-    </div>
-    <!--<div class="item">
-        <div class="lable">密码: </div>
-        <div class="conent">
-            <input v-model="user.password" type="password" class="input" style="width: 325px; " placeholder="输入密码">
-            <span>长度8至12</span>
-        </div>
-    </div>-->
-    <div class="item">
-        <div class="lable">设置状态: </div>
-        <div class="conent">
-            <sd-radio :list.sync="status" :index.sync="status_selected" :name='"name"'></sd-radio>
-        </div>
-    </div>
-    <div class="item">
-        <div class="lable">选择账号类型: </div>
-        <div class="conent">
-            <sd-radio :list.sync="roles" :index.sync="roles_selected" :name='"remark"'></sd-radio>
-        </div>
-    </div>
-</div>
+</template>

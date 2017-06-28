@@ -18,8 +18,9 @@
 
                 //资源整合
                 this.separateData(regObj);
-                this.insertDom();
                 console.log(this.separateDataArr);
+                this.insertDom();
+                
             }
             
             
@@ -55,31 +56,42 @@
         insertDom:function(){
             //将分离的资源插入到dom中
             //暂时只分离html
-            console.log(this.separateDataArr);
+            
             sd.each(this.separateDataArr,function(index,item){
 
                 var dom = item.el;
                 
                 for(var i = 0;i<item.dataArr.length;i++){
                     var obj = item.dataArr[i];
+                   
                     if(obj.type=='html'){
                         
-                        var jsReg = /<script(?:.)*>((.|\s)*)<\/script>/;
-                        var cssReg = /<style(?:.)*>((.|\s)*)<\/style>/;
-                        var domReg = /<template(?:\s*[\w'"=\s]+)*>(.*)<\/template>/;
+                        //分别匹配对应的js css dom
+                        var jsReg = /<script(?:[^>][.\s]*)*>((.|\s)*)<\/script>/;
+                        var cssReg = /<style(?:[^>][.\s]*)*>([\s\S]*?)(?:<\/style>[^\"\']|<\/style>)/;
+                        var domReg = /<template(?:[^>][.\s]*)*>([\s\S]*?)(?:<\/style>[^\"\']|<\/template>)/;
 
+                        if(cssReg.exec(obj.data)){
+                           
+                            var styleDom = this.createDom('style',{'data-sd':'asdasd'});
+                            styleDom.innerHTML = RegExp.$1;
+                            var head = this.getDom('head');
+                            head.appendChild(styleDom);
+                        }
+
+                        if(domReg.exec(obj.data)){
+                            dom.innerHTML = RegExp.$1;
+                        }
 
                         if(jsReg.exec(obj.data)){
                             
-                            var scriptDom = this.createDom('script');
+                            var scriptDom = this.createDom('script',{'data-sd':'asdasd'});
                             scriptDom.innerHTML = RegExp.$1;
                             var head = this.getDom('head');
                             head.appendChild(scriptDom);
 
                         }
-                        // else if(cssReg.exec(obj.data)){
 
-                        // }
                     }
                 }
                 // sd.each(item.dataArr,function(dataArrIndex,dataArrItem){
