@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="src/js/sd.js"></script>
+    <script src="src/js/ajax.js"></script>
+    <script src="src/js/loader.js"></script>
+    <script src="src/js/separate.js"></script>
+    <script>
+
+        var routes = [{
+            el:"#a .path",
+            path:'/',
+            assets:['src/res/test.txt','src/res/test.txt',"src/res/admin_add.html","src/res/admin_edit.html"],
+            children:[{el:"#a .p",path:"b",assets:["src/res/test.txt"]}]
+        }];
+
+        sd(routes).start();
+        // sd.ajax({
+        //     url:'src/res/test.txt',
+        //     mothed:"get",
+        //     async:true,
+        //     success:function(str){
+        //         console.log(str);
+        //     },
+        //     error:function(){
+
+        //     }
+        // });
+        // console.log(sd.type({}))
+        
+        
+    </script>
+</head>
+<body>
+    <div id = 'a'>
+        <div class="path"></div>
+        <div class="p"></div>
+    </div>
+</body>
+</html>
